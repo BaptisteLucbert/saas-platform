@@ -1,0 +1,67 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Gestion Services – Admin{% endblock %}
+
+{% block body %}
+<div class="dashboard-header">
+    <div>
+        <h1 class="dashboard-title">Gestion des Services</h1>
+        <p class="dashboard-subtitle">Configuration des plans et tarifs Whop</p>
+    </div>
+    <button class="btn btn-primary">+ Nouveau Service</button>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>Slugs / IDs Whop</th>
+                        <th>Tarifs (€)</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for service in services %}
+                    <tr>
+                        <td>
+                            <div style="display:flex; align-items:center; gap:0.75rem;">
+                                <span style="font-size:1.5rem;">{{ service.icon }}</span>
+                                <strong>{{ service.name }}</strong>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="font-size:0.75rem;">
+                                Slug: {{ service.slug }}<br>
+                                M: {{ service.whopMonthlyPlanId|default('–') }} <span style="color:var(--text-muted);">(Sandbox: {{ service.whopMonthlyPlanIdSandbox|default('–') }})</span><br>
+                                Y: {{ service.whopAnnualPlanId|default('–') }} <span style="color:var(--text-muted);">(Sandbox: {{ service.whopAnnualPlanIdSandbox|default('–') }})</span>
+                            </div>
+                        </td>
+                        <td>{{ service.monthlyPrice }} / {{ service.annualPrice }}</td>
+                        <td>
+                            <span class="status status-{{ service.isActive ? 'active' : 'cancelled' }}">
+                                {{ service.isActive ? 'Activé' : 'Désactivé' }}
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display:flex; gap:0.5rem;">
+                                <form action="{{ path('app_admin_service_toggle', {id: service.id}) }}" method="post">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('toggle_service_' ~ service.id) }}">
+                                    <button type="submit" class="btn btn-ghost btn-sm">
+                                        {{ service.isActive ? 'Désactiver' : 'Activer' }}
+                                    </button>
+                                </form>
+                                <a href="{{ path('app_admin_service_edit', {id: service.id}) }}" class="btn btn-ghost btn-sm">Éditer</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

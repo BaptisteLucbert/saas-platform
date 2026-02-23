@@ -1,0 +1,63 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Gestion Utilisateurs – ProfitPulse{% endblock %}
+
+{% block body %}
+<div class="dashboard-header">
+    <div>
+        <h1 class="dashboard-title">Utilisateurs</h1>
+        <p class="dashboard-subtitle">Gestion des comptes et des suspensions</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <form method="get" style="width:100%; display:flex; gap:1rem;">
+            <input type="text" name="q" class="form-control" placeholder="Rechercher par email..." value="{{ search|default('') }}">
+            <button type="submit" class="btn btn-primary">Rechercher</button>
+            {% if search|default('') %}
+                <a href="{{ path('app_admin_users') }}" class="btn btn-ghost">Réinitialiser</a>
+            {% endif %}
+        </form>
+    </div>
+    <div class="card-body">
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Email</th>
+                        <th>Inscrit le</th>
+                        <th>Dernière connexion</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td><strong>{{ user.email }}</strong></td>
+                        <td>{{ user.createdAt|date('d/m/Y') }}</td>
+                        <td>{{ user.lastLoginAt ? user.lastLoginAt|date('d/m/Y H:i') : '–' }}</td>
+                        <td>
+                            {% if user.isSuspended %}
+                                <span class="status status-cancelled">Suspendu</span>
+                            {% else %}
+                                <span class="status status-active">Actif</span>
+                            {% endif %}
+                            {% if user.isAdmin %}
+                                <span class="badge badge-danger">ADMIN</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ path('app_admin_user_show', {id: user.id}) }}" class="btn btn-ghost btn-sm">Gérer</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

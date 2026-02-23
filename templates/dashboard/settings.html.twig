@@ -1,0 +1,176 @@
+{% extends 'base_dashboard.html.twig' %}
+
+{% block title %}Paramètres – ProfitPulse{% endblock %}
+
+{% block body %}
+<div class="dashboard-header">
+    <div>
+        <h1 class="dashboard-title">Paramètres du compte</h1>
+        <p class="dashboard-subtitle">Gérez vos informations personnelles et vos préférences</p>
+    </div>
+</div>
+
+<div class="vinted-grid">
+    {# Profil #}
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Informations de profil</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" action="{{ path('app_dashboard_settings_update') }}">
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label class="form-label">Email (non modifiable)</label>
+                    <input type="email" class="form-control" value="{{ user.email }}" disabled style="background: rgba(255,255,255,0.02);">
+                    <span class="form-hint" style="font-size: 0.75rem; color: var(--color-text-faint);">Contactez le support pour changer d'email.</span>
+                </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label class="form-label">Prénom</label>
+                    <input type="text" name="firstName" class="form-control" value="{{ user.firstName }}" placeholder="Votre prénom">
+                </div>
+                <div class="form-group" style="margin-bottom: 2rem;">
+                    <label class="form-label">Nom</label>
+                    <input type="text" name="lastName" class="form-control" value="{{ user.lastName }}" placeholder="Votre nom">
+                </div>
+                <button type="submit" class="btn btn-primary btn-xl" style="width:100%; justify-content:center;">Mettre à jour le profil</button>
+            </form>
+        </div>
+    </div>
+
+    {# Notifications / Préférences #}
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Préférences</h2>
+        </div>
+        <div class="card-body">
+            <div style="display:flex; flex-direction:column; gap:1.75rem;">
+                <div class="pref-item" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <div style="font-weight:600; color: #fff;">Alertes Email</div>
+                        <div style="font-size:0.8rem; color:var(--color-text-faint);">Recevoir un récapitulatif hebdo</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" onchange="updatePref('email_alerts', this.checked)" {{ user.getPreference('email_alerts', true) ? 'checked' : '' }}>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="pref-item" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <div style="font-weight:600; color: #fff;">Alertes Discord Premium</div>
+                        <div style="font-size:0.8rem; color:var(--color-text-faint);">Notifications sonores sur Discord</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" onchange="updatePref('discord_alerts', this.checked)" {{ user.getPreference('discord_alerts', true) ? 'checked' : '' }}>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="pref-item" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <div style="font-weight:600; color: #fff;">Mode Dark Avancé</div>
+                        <div style="font-size:0.8rem; color:var(--color-text-faint);">Utiliser les contrastes OLED</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" onchange="updatePref('dark_mode', this.checked)" {{ user.getPreference('dark_mode', false) ? 'checked' : '' }}>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid rgba(255,255,255,0.05);">
+                <button class="btn btn-danger btn-ghost" style="width:100%; border:1px solid rgba(239,68,68,0.2); justify-content: center;" onclick="confirmDeletion()">Supprimer mon compte</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function updatePref(key, value) {
+    try {
+        const response = await fetch("{{ path('app_dashboard_settings_preferences') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ [key]: value })
+        });
+        
+        if (!response.ok) throw new Error('Erreur lors de la sauvegarde');
+        
+        // Petite notification visuelle discrète
+        showToast('Préférence mise à jour', 'success');
+
+        // Effet spécifique pour le mode Dark
+        if (key === 'dark_mode') {
+            document.documentElement.classList.toggle('oled-mode', value);
+        }
+    } catch (error) {
+        showToast(error.message, 'error');
+    }
+}
+
+function showToast(message, type) {
+    // Si une fonction toast globale existe on l'utilise, sinon console log pour l'instant
+    console.log(`[${type}] ${message}`);
+}
+
+function confirmDeletion() {
+    if (confirm('Cette action est irréversible. Toutes vos données seront supprimées définitivement. Continuer ?')) {
+        // Logique de suppression
+    }
+}
+</script>
+
+<style>
+.pref-item {
+    padding: 0.5rem 0;
+}
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(255,255,255,0.1);
+    transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 24px;
+}
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+input:checked + .toggle-slider {
+    background: linear-gradient(135deg, var(--color-primary), #3b82f6);
+}
+input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+}
+
+/* OLED Mode specific styles if needed */
+.oled-mode body {
+    background: #000 !important;
+}
+.oled-mode .card {
+    background: #050505 !important;
+    border-color: #111 !important;
+}
+</style>
+{% endblock %}

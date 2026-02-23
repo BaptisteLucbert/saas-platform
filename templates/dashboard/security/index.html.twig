@@ -1,0 +1,279 @@
+{% extends 'base_dashboard.html.twig' %}
+
+{% block title %}Sécurité – ProfitPulse{% endblock %}
+
+{% block body %}
+<div class="dashboard-header">
+    <div>
+        <h1 class="dashboard-title">Sécurité du compte</h1>
+        <p class="dashboard-subtitle">Protégez votre compte avec les meilleurs outils de sécurité</p>
+    </div>
+</div>
+
+<div class="vinted-grid">
+    {# Password Section #}
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Mot de passe</h2>
+        </div>
+        <div class="card-body">
+            <div style="display:flex; align-items:center; gap:1.5rem; margin-bottom:1.5rem;">
+                <div class="stat-card-icon" style="background:rgba(124,58,237,0.1); font-size:1.5rem;">🔑</div>
+                <div>
+                    <div style="font-weight:700; color:var(--color-text);">Dernière modification</div>
+                    <div style="font-size:0.875rem; color:var(--color-text-muted);">{{ user.updatedAt ? user.updatedAt|date('d/m/Y') : 'Inconnu' }}</div>
+                </div>
+            </div>
+            <a href="{{ path('app_password_change') }}" class="btn btn-ghost" style="width:100%; justify-content:center; border: 1px solid var(--color-border);">Changer le mot de passe</a>
+        </div>
+    </div>
+
+    {# 2FA Section #}
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Double Authentification (2FA)</h2>
+        </div>
+        <div class="card-body">
+            <div style="display:flex; align-items:center; gap:1.5rem; margin-bottom:1.5rem;">
+                <div class="stat-card-icon" style="background:{{ user.twoFactorEnabled ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)' }}; font-size:1.5rem;">
+                    {{ user.twoFactorEnabled ? '🛡️' : '⚠️' }}
+                </div>
+                <div>
+                    <div style="font-weight:700; color:var(--color-text);">Statut : {{ user.twoFactorEnabled ? 'Activé' : 'Désactivé' }}</div>
+                    <div style="font-size:0.875rem; color:var(--color-text-muted);">Protégez vos accès et vos transactions</div>
+                </div>
+            </div>
+            {% if user.twoFactorEnabled %}
+                <button onclick="openModal('modal-2fa-disable')" class="btn btn-danger" style="width:100%; justify-content:center;">Désactiver la 2FA</button>
+            {% else %}
+                <button onclick="openModal('modal-2fa')" class="btn btn-primary" style="width:100%; justify-content:center;">Configurer la 2FA</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{# Active Sessions / Activity Log #}
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h2 class="card-title">Journal d'activité récent</h2>
+    </div>
+    <div class="card-body">
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Action</th>
+                        <th>IP</th>
+                        <th>Localisation</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if loginAttempts|default([]) is empty %}
+                        <tr>
+                            <td colspan="5" style="text-align:center; color:var(--color-text-faint); padding: 2rem;">Aucune activité récente enregistrée.</td>
+                        </tr>
+                    {% else %}
+                        {% for attempt in loginAttempts %}
+                        <tr>
+                            <td>{{ attempt.createdAt|date('d/m/Y H:i') }}</td>
+                            <td>{{ attempt.success ? 'Connexion réussie' : 'Échec de connexion' }}</td>
+                            <td>{{ attempt.ipAddress }}</td>
+                            <td><span style="font-size:0.8rem; color:var(--color-text-faint);">Paris, FR</span></td>
+                            <td>
+                                <span class="status status-{{ attempt.success ? 'active' : 'cancelled' }}">
+                                    {{ attempt.success ? 'Succès' : 'Échec' }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{# 2FA SETUP MODAL #}
+<div id="modal-2fa" class="premium-modal">
+    <div class="modal-overlay" onclick="closeModal('modal-2fa')"></div>
+    <div class="modal-content" style="max-width: 480px; padding: 2rem;">
+        <div class="modal-header" style="margin-bottom: 1.5rem;">
+            <h2 class="modal-title">Activer la 2FA</h2>
+            <button class="modal-close" onclick="closeModal('modal-2fa')">&times;</button>
+        </div>
+        <div class="modal-body" style="text-align: center;">
+            <div style="margin-bottom: 2.5rem;">
+                <div class="step-badge">1</div>
+                <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 1.5rem;">Scannez ce QR Code avec votre application de sécurité</p>
+                <div class="qr-container" style="margin: 0 auto 1.5rem auto;">
+                    <img src="{{ qrCodeDataUri }}" alt="QR Code 2FA" style="width: 260px; height: 260px;">
+                    <div class="qr-glow"></div>
+                </div>
+                <div class="manual-code-box" style="justify-content: center; background: rgba(0,0,0,0.2); max-width: 320px; margin: 0 auto;">
+                    <code id="manual-secret" style="font-size: 0.85rem; letter-spacing: 1px;">{{ secret }}</code>
+                    <button class="copy-btn" onclick="copySecret()" style="margin-left: 10px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div style="padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05);">
+                <div class="step-badge">2</div>
+                <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 1.25rem;">Entrez le code à 6 chiffres pour confirmer</p>
+                <form action="{{ path('app_dashboard_2fa_enable') }}" method="post">
+                    <input type="text" name="code" class="form-control code-input" placeholder="000 000" maxlength="6" required
+                           style="margin-bottom: 1rem; height: 55px; font-size: 1.5rem !important;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; height: 50px; font-weight: 700; font-size: 1rem;">
+                        Activer la protection
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# 2FA DISABLE MODAL #}
+<div id="modal-2fa-disable" class="premium-modal">
+    <div class="modal-overlay" onclick="closeModal('modal-2fa-disable')"></div>
+    <div class="modal-content" style="max-width: 400px; padding: 2rem;">
+        <div class="modal-header" style="margin-bottom: 1.5rem;">
+            <h2 class="modal-title">Désactiver la 2FA</h2>
+            <button class="modal-close" onclick="closeModal('modal-2fa-disable')">&times;</button>
+        </div>
+        <div class="modal-body" style="text-align: center;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🛡️</div>
+            <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 1.5rem;">
+                Pour confirmer la désactivation, veuillez saisir le code de sécurité actuel de votre application.
+            </p>
+            <form action="{{ path('app_dashboard_2fa_disable') }}" method="post">
+                <input type="hidden" name="_token" value="{{ csrf_token('disable_2fa') }}">
+                <input type="text" name="code" class="form-control code-input" placeholder="000 000" maxlength="6" required autofocus
+                       style="margin-bottom: 1rem; height: 55px; font-size: 1.5rem !important;">
+                <button type="submit" class="btn btn-danger" style="width: 100%; height: 50px; font-weight: 700; font-size: 1rem;">
+                    Désactiver maintenant
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal(id) {
+        const modal = document.getElementById(id);
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => modal.querySelector('.code-input').focus(), 400);
+    }
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function copySecret() {
+        const secret = document.getElementById('manual-secret').innerText;
+        navigator.clipboard.writeText(secret).then(() => {
+            const btn = document.querySelector('.copy-btn');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<span style="color:var(--color-success); font-size: 10px;">Copié</span>';
+            setTimeout(() => btn.innerHTML = originalHtml, 2000);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('setup')) {
+            openModal('modal-2fa');
+        }
+    });
+</script>
+
+<style>
+    /* Modal Base */
+    .premium-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .premium-modal.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .modal-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(2, 6, 23, 0.85);
+        backdrop-filter: blur(10px);
+    }
+    .modal-content {
+        position: relative;
+        background: #0f172a;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 24px;
+        width: 90%;
+        box-shadow: 0 0 40px rgba(0,0,0,0.4);
+        transform: scale(0.95);
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .premium-modal.active .modal-content {
+        transform: scale(1);
+    }
+
+    /* Modal Styling */
+    .modal-header { display: flex; justify-content: space-between; align-items: center; }
+    .modal-title { font-size: 1.25rem; font-weight: 800; color: #fff; }
+    .modal-close { 
+        background: rgba(255,255,255,0.05); border: none; color: #64748b; width: 32px; height: 32px; 
+        border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; 
+        cursor: pointer; transition: 0.2s; 
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+    /* Badges 1 2 */
+    .step-badge {
+        width: 28px;
+        height: 28px;
+        background: var(--color-primary);
+        color: #ffffff !important;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+        margin-bottom: 0.75rem;
+        box-shadow: 0 4px 10px rgba(99, 102, 241, 0.4);
+    }
+
+    /* QR Code Container */
+    .qr-container { position: relative; display: inline-block; background: #fff; padding: 10px; border-radius: 16px; }
+    .qr-container img { display: block; position: relative; z-index: 1; }
+    .qr-glow { position: absolute; inset: 0; background: var(--color-primary); filter: blur(25px); opacity: 0.15; z-index: 0; }
+
+    /* Manual Code Box */
+    .manual-code-box { 
+        display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.08); 
+        padding: 0.75rem 1rem; border-radius: 12px; 
+    }
+    .manual-code-box code { font-family: monospace; color: var(--color-primary-light); font-weight: 700; }
+    .copy-btn { background: none; border: none; color: #64748b; cursor: pointer; transition: 0.2s; }
+    .copy-btn:hover { color: #fff; }
+
+    /* Inputs */
+    .code-input {
+        background: rgba(0,0,0,0.2) !important;
+        border: 2px solid rgba(255,255,255,0.08) !important;
+        text-align: center !important;
+        letter-spacing: 0.3em !important;
+        color: #fff !important;
+        border-radius: 12px !important;
+    }
+    .code-input:focus { border-color: var(--color-primary) !important; }
+</style>
+{% endblock %}

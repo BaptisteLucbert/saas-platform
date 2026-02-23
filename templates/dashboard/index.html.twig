@@ -1,0 +1,110 @@
+{% extends 'base_dashboard.html.twig' %}
+
+{% block title %}Dashboard – ProfitPulse{% endblock %}
+
+{% block body %}
+{# Welcome banner if must change password - redirect handled in controller #}
+<div class="dashboard-header">
+    <div>
+        <h1 class="dashboard-title">Bonjour, {{ user.firstName ?? user.email|split('@')|first }} 👋</h1>
+        <p class="dashboard-subtitle">{{ "now"|date("l d F Y") }} – Votre espace personnel</p>
+    </div>
+    <a href="{{ path('app_home') }}#services" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Ajouter un service
+    </a>
+</div>
+
+{# Stats #}
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-card-icon" style="background:rgba(124,58,237,0.2);">📦</div>
+        <div class="stat-card-value">{{ subscriptions|length }}</div>
+        <div class="stat-card-label">Abonnements actifs</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card-icon" style="background:rgba(16,185,129,0.2);">💳</div>
+        <div class="stat-card-value">–</div>
+        <div class="stat-card-label">Prochain renouvellement</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card-icon" style="background:rgba(6,182,212,0.2);">🤖</div>
+        <div class="stat-card-value">
+            {{ user.discordId ? '✓' : '–' }}
+        </div>
+        <div class="stat-card-label">Discord connecté</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card-icon" style="background:rgba(245,158,11,0.2);">🛡️</div>
+        <div class="stat-card-value">{{ user.twoFactorEnabled ? 'ON' : 'OFF' }}</div>
+        <div class="stat-card-label">2FA</div>
+    </div>
+</div>
+
+{# Active subscriptions #}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Mes abonnements actifs</h2>
+        <a href="{{ path('app_dashboard_subscriptions') }}" class="btn btn-ghost btn-sm">Voir tout</a>
+    </div>
+    <div class="card-body">
+        {% if subscriptions is empty %}
+            <div style="text-align:center; padding:2rem; color:var(--color-text-muted);">
+                <p style="font-size:2rem; margin-bottom:1rem;">📭</p>
+                <p>Aucun abonnement actif.</p>
+                <a href="{{ path('app_home') }}#services" class="btn btn-primary" style="margin-top:1rem;">
+                    Découvrir nos offres
+                </a>
+            </div>
+        {% else %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Statut</th>
+                            <th>Cycle</th>
+                            <th>Montant</th>
+                            <th>Renouvellement</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for subscription in subscriptions %}
+                        <tr>
+                            <td>
+                                <strong>{{ subscription.service.name }}</strong>
+                            </td>
+                            <td><span class="status status-{{ subscription.status }}">{{ subscription.status|capitalize }}</span></td>
+                            <td>{{ subscription.interval == 'monthly' ? 'Mensuel' : 'Annuel' }}</td>
+                            <td>{{ subscription.amount }}€</td>
+                            <td>{{ subscription.currentPeriodEnd ? subscription.currentPeriodEnd|date('d/m/Y') : '–' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{# Quick actions #}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Actions rapides</h2>
+    </div>
+    <div class="card-body" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem;">
+        <a href="{{ path('app_dashboard_discord') }}" class="btn btn-ghost" style="justify-content:flex-start; gap:0.75rem;">
+            <span style="font-size:1.3rem;">🤖</span> Connecter Discord
+        </a>
+        <a href="{{ path('app_password_change') }}" class="btn btn-ghost" style="justify-content:flex-start; gap:0.75rem;">
+            <span style="font-size:1.3rem;">🔑</span> Changer le mot de passe
+        </a>
+        <a href="{{ path('app_dashboard_invoices') }}" class="btn btn-ghost" style="justify-content:flex-start; gap:0.75rem;">
+            <span style="font-size:1.3rem;">📄</span> Voir les factures
+        </a>
+        <a href="{{ path('app_dashboard_security') }}" class="btn btn-ghost" style="justify-content:flex-start; gap:0.75rem;">
+            <span style="font-size:1.3rem;">🛡️</span> Sécurité du compte
+        </a>
+    </div>
+</div>
+{% endblock %}

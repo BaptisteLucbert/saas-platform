@@ -1,0 +1,44 @@
+framework:
+    secret: '%env(APP_SECRET)%'
+    http_method_override: false
+    handle_all_throwables: true
+    php_errors:
+        log: true
+
+    session:
+        handler_id: null
+        cookie_secure: auto
+        cookie_samesite: lax
+        cookie_httponly: true
+        cookie_lifetime: 0
+        gc_maxlifetime: 1440
+        gc_probability: 1
+
+    csrf_protection: true
+
+    assets:
+        version: '%env(APP_VERSION)%'
+
+    rate_limiter:
+        login:
+            policy: sliding_window
+            limit: 5
+            interval: '15 minutes'
+        password_reset:
+            policy: sliding_window
+            limit: 3
+            interval: '60 minutes'
+        api_global:
+            policy: sliding_window
+            limit: 100
+            interval: '1 minute'
+
+when@test:
+    framework:
+        test: true
+        session:
+            storage_factory_id: session.storage.factory.mock_file
+
+when@prod:
+    framework:
+        handle_all_throwables: true

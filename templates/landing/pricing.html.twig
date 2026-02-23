@@ -1,0 +1,157 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tarifs – ProfitPulse{% endblock %}
+
+{% block body %}
+<section class="page-hero">
+    <div class="hero-glow hero-glow-1"></div>
+    <div class="container">
+        <div class="section-header">
+            <span class="section-badge">TARIFS</span>
+            <h1 class="section-title">Des prix <span class="gradient-text">transparents</span></h1>
+            <p class="section-subtitle">Choisissez le service qui correspond à votre stratégie. Sans frais cachés.</p>
+        </div>
+
+        <div class="pricing-toggle-wrap">
+            <span class="toggle-label">Mensuel</span>
+            <label class="toggle-switch" for="billing-toggle">
+                <input type="checkbox" id="billing-toggle">
+                <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label">Annuel <span class="badge-save">-20%</span></span>
+        </div>
+
+        <div class="pricing-grid">
+            {% for service in services %}
+            <div class="pricing-card animate-on-scroll {% if service.badgeText == '🔥 Populaire' %}pricing-card-featured{% endif %}">
+                {% if service.badgeText %}
+                    <div class="pricing-badge">{{ service.badgeText }}</div>
+                {% endif %}
+                <div class="pricing-icon">
+                    {{ service.icon ?? '⚡' }}
+                </div>
+                <h3 class="pricing-title">{{ service.name }}</h3>
+                <p class="pricing-desc">{{ service.description }}</p>
+
+                <div class="pricing-price" data-monthly="{{ service.monthlyPrice }}" data-annual="{{ (service.annualPrice / 12)|number_format(2) }}">
+                    <span class="price-currency">€</span>
+                    <span class="price-amount">{{ service.monthlyPrice }}</span>
+                    <span class="price-period">/mois</span>
+                </div>
+                <div class="price-annual-note">
+                    <span class="price-annual-show" style="display:none;">Facturé {{ service.annualPrice }}€/an – économisez {{ service.annualSavingsPercent }}%</span>
+                </div>
+
+                {% if service.features %}
+                <ul class="pricing-features">
+                    {% for feature in service.features %}
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        {{ feature }}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+
+                <div class="pricing-actions">
+                    <a href="{{ path('app_checkout', {slug: service.slug, interval: 'monthly'}) }}"
+                       class="btn btn-primary pricing-btn btn-monthly"
+                       id="pricing-{{ service.slug }}-monthly">
+                        S'abonner – {{ service.monthlyPrice }}€/mois
+                    </a>
+                    <a href="{{ path('app_checkout', {slug: service.slug, interval: 'annual'}) }}"
+                       class="btn btn-primary pricing-btn btn-annual"
+                       id="pricing-{{ service.slug }}-annual"
+                       style="display:none;">
+                        S'abonner – {{ service.annualPrice }}€/an
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>Aucun service disponible pour le moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        {# Bundle offer #}
+        {% if services|length >= 2 %}
+        <div class="bundle-card animate-on-scroll">
+            <div class="bundle-glow"></div>
+            <div class="bundle-badge">🎁 BUNDLE EXCLUSIF</div>
+            <div class="bundle-content">
+                <h3>Accès illimité – Tous les services</h3>
+                <p>Profitez de nos 3 services au meilleur prix avec le bundle complet.</p>
+            </div>
+            <div class="bundle-pricing">
+                <div class="bundle-price">
+                    <span class="price-currency">€</span>
+                    <span class="price-amount">79</span>
+                    <span class="price-period">/mois</span>
+                </div>
+                <a href="{{ path('app_checkout', {slug: 'bundle', interval: 'monthly'}) }}" class="btn btn-primary btn-xl" id="pricing-bundle-btn">
+                    Obtenir le bundle
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="pricing-guarantees">
+            <div class="guarantee-item">
+                <span>✓</span>
+                <span>Annulation à tout moment</span>
+            </div>
+            <div class="guarantee-item">
+                <span>✓</span>
+                <span>Paiement 100% sécurisé Whop</span>
+            </div>
+            <div class="guarantee-item">
+                <span>✓</span>
+                <span>Support réactif 7j/7</span>
+            </div>
+            <div class="guarantee-item">
+                <span>✓</span>
+                <span>Compte créé automatiquement</span>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+const toggle = document.getElementById('billing-toggle');
+const monthlyBtns = document.querySelectorAll('.btn-monthly');
+const annualBtns = document.querySelectorAll('.btn-annual');
+const annualNotes = document.querySelectorAll('.price-annual-show');
+const priceAmounts = document.querySelectorAll('.pricing-price');
+
+toggle.addEventListener('change', function() {
+    if (this.checked) {
+        // Annual
+        monthlyBtns.forEach(b => b.style.display = 'none');
+        annualBtns.forEach(b => b.style.display = 'block');
+        annualNotes.forEach(n => n.style.display = 'block');
+        priceAmounts.forEach(el => {
+            const annual = el.dataset.annual;
+            el.querySelector('.price-amount').textContent = annual;
+            el.querySelector('.price-period').textContent = '/mois*';
+        });
+    } else {
+        // Monthly
+        monthlyBtns.forEach(b => b.style.display = 'block');
+        annualBtns.forEach(b => b.style.display = 'none');
+        annualNotes.forEach(n => n.style.display = 'none');
+        priceAmounts.forEach(el => {
+            const monthly = el.dataset.monthly;
+            el.querySelector('.price-amount').textContent = monthly;
+            el.querySelector('.price-period').textContent = '/mois';
+        });
+    }
+});
+
+// keep toggle functionality; no label to initialize
+
+</script>
+{% endblock %}

@@ -1,0 +1,286 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ProfitPulse – Boostez vos revenus avec l'IA{% endblock %}
+
+{% block body %}
+
+{# ===== HERO SECTION ===== #}
+<section class="hero" id="hero">
+    <div class="hero-bg-grid"></div>
+    <div class="hero-glow hero-glow-1"></div>
+    <div class="hero-glow hero-glow-2"></div>
+    <div class="container hero-content">
+        <div class="hero-badge animate-fade-in">
+            <span class="badge-dot"></span>
+            <span>Plateforme Active • 2 400+ membres</span>
+        </div>
+        <h1 class="hero-title animate-fade-in-up">
+            Générez des revenus<br>
+            <span class="gradient-text">automatiquement.</span>
+        </h1>
+        <p class="hero-subtitle animate-fade-in-up delay-1">
+            ProfitPulse regroupe 4 services premium propulsés par l'IA pour vous faire gagner plus&nbsp;: pronostics sportifs, deals Amazon & automatisation Vinted (Web & Discord).
+        </p>
+        <div class="hero-cta animate-fade-in-up delay-2">
+            <a href="{{ path('app_home') }}#services" class="btn btn-primary btn-xl" id="hero-cta-btn">
+                <span>Choisir mon service</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="#services" class="btn btn-ghost btn-xl">
+                Voir les services
+            </a>
+        </div>
+        <div class="hero-stats animate-fade-in-up delay-3">
+            <div class="stat-item">
+                <span class="stat-number">94%</span>
+                <span class="stat-label">Taux de satisfaction</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-number">+€ 280</span>
+                <span class="stat-label">Moy. mensuelle / membre</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-number">24/7</span>
+                <span class="stat-label">Alertes en temps réel</span>
+            </div>
+        </div>
+    </div>
+    <div class="hero-scroll-indicator">
+        <div class="scroll-line"></div>
+    </div>
+</section>
+
+{# ===== SERVICES SECTION ===== #}
+<section class="section services-section" id="services">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-badge">NOS SERVICES</span>
+            <h2 class="section-title">Quatre outils, <span class="gradient-text">un seul avantage</span></h2>
+            <p class="section-subtitle">Chaque service est conçu pour maximiser votre rendement avec un minimum d'effort.</p>
+        </div>
+
+        <div class="pricing-toggle-wrap">
+            <span class="toggle-label">Mensuel</span>
+            <label class="toggle-switch" for="billing-toggle-home">
+                <input type="checkbox" id="billing-toggle-home">
+                <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label">Annuel <span class="badge-save">-20%</span></span>
+        </div>
+
+        <div class="services-grid">
+            {% for service in services %}
+                {% set iconClass = '' %}
+                {% if service.slug == 'pronostics' %}
+                    {% set iconClass = 'service-icon-sports' %}
+                {% elseif service.slug == 'amazon' %}
+                    {% set iconClass = 'service-icon-amazon' %}
+                {% elseif service.slug starts with 'vinted' %}
+                    {% set iconClass = 'service-icon-vinted' %}
+                {% endif %}
+
+                <div class="service-card animate-on-scroll{% if service.badgeText == '🔥 Populaire' %} service-card-featured{% endif %}" id="service-{{ service.slug }}">
+                    <div class="service-card-glow{% if service.badgeText == '🔥 Populaire' %} service-card-glow-featured{% endif %}"></div>
+                    <div class="service-icon-wrap{% if iconClass %} {{ iconClass }}{% endif %}">
+                        <span class="service-icon">{{ service.icon ?? '⚡' }}</span>
+                    </div>
+                    {% if service.badgeText %}
+                        <div class="service-badge">{{ service.badgeText }}</div>
+                    {% endif %}
+                    <h3 class="service-title">{{ service.name }}</h3>
+                    <p class="service-desc">{{ service.description }}</p>
+
+                    {% if service.features %}
+                        <ul class="service-features">
+                            {% for feature in service.features %}
+                                <li>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                    {{ feature }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    <div class="service-price" data-monthly="{{ service.monthlyPrice }}" data-annual="{{ (service.annualPrice / 12)|number_format(2) }}">
+                        <span class="price-currency">€</span>
+                        <span class="price-amount">{{ service.monthlyPrice }}</span>
+                        <span class="price-period">/mois</span>
+                    </div>
+                    <a href="{{ path('app_checkout', {slug: service.slug, interval: 'monthly'}) }}" class="btn btn-primary service-btn" data-monthly="{{ service.monthlyPrice }}" data-annual="{{ (service.annualPrice / 12)|number_format(2) }}">
+                        S'abonner – {{ service.monthlyPrice }}€/mois
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                </div>
+            {% else %}
+                <div class="empty-state"><p>Aucun service disponible pour le moment.</p></div>
+            {% endfor %}
+        </div>
+
+        {# bundle offer (all services) #}
+        {% if services|length >= 2 %}
+        <div class="bundle-card animate-on-scroll" style="margin-top:var(--space-8);">
+            <div class="bundle-glow"></div>
+            <div class="bundle-badge">🎁 BUNDLE EXCLUSIF</div>
+            <div class="bundle-content">
+                <h3>Accès illimité – Tous les services</h3>
+                <p>Profitez de nos 3 services au meilleur prix avec le bundle complet.</p>
+            </div>
+            <div class="bundle-pricing">
+                <div class="bundle-price" data-monthly="{{ bundleMonthly }}" data-annual="{{ bundleAnnual / 12 }}">
+                    <span class="price-currency">€</span>
+                    <span class="price-amount">{{ bundleMonthly }}</span>
+                    <span class="price-period">/mois</span>
+                </div>
+                <a href="{{ path('app_checkout', {slug: 'bundle', interval: 'monthly'}) }}" class="btn btn-primary btn-xl" id="pricing-bundle-btn" data-monthly="{{ bundleMonthly }}" data-annual="{{ bundleAnnual / 12 }}">
+                    Obtenir le bundle
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{# ===== HOW IT WORKS ===== #}
+<section class="section how-section">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-badge">COMMENT ÇA MARCHE</span>
+            <h2 class="section-title">Opérationnel en <span class="gradient-text">3 minutes</span></h2>
+        </div>
+        <div class="steps-grid">
+            <div class="step-card animate-on-scroll">
+                <div class="step-number">01</div>
+                <div class="step-icon">💳</div>
+                <h3>Choisissez votre service</h3>
+                <p>Sélectionnez un abonnement mensuel ou annuel et payez en toute sécurité via Whop.</p>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step-card animate-on-scroll">
+                <div class="step-number">02</div>
+                <div class="step-icon">📧</div>
+                <h3>Recevez vos accès</h3>
+                <p>Votre compte est créé automatiquement. Vous recevez vos identifiants par email sécurisé.</p>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step-card animate-on-scroll">
+                <div class="step-number">03</div>
+                <div class="step-icon">🚀</div>
+                <h3>Commencez à gagner</h3>
+                <p>Connectez votre Discord, configurez vos préférences et recevez vos premières alertes.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ===== SECURITY SECTION ===== #}
+<section class="section security-section" id="security">
+    <div class="container">
+        <div class="security-grid">
+            <div class="security-content animate-on-scroll">
+                <span class="section-badge">SÉCURITÉ</span>
+                <h2 class="section-title">Sécurité <span class="gradient-text">niveau entreprise</span></h2>
+                <p class="security-desc">Vos données et vos transactions sont protégées par les meilleures pratiques de l'industrie.</p>
+                <div class="security-features">
+                    <div class="security-feature">
+                        <div class="security-feature-icon">🔐</div>
+                        <div>
+                            <h4>Chiffrement Argon2id</h4>
+                            <p>Mots de passe hashés avec l'algorithme le plus sécurisé du marché.</p>
+                        </div>
+                    </div>
+                    <div class="security-feature">
+                        <div class="security-feature-icon">🛡️</div>
+                        <div>
+                            <h4>Protection Anti-Brute Force</h4>
+                            <p>Rate limiting & blocage automatique des tentatives malveillantes.</p>
+                        </div>
+                    </div>
+                    <div class="security-feature">
+                        <div class="security-feature-icon">💳</div>
+                        <div>
+                            <h4>Paiement 100% Whop</h4>
+                            <p>Aucune donnée bancaire stockée sur nos serveurs. PCI-DSS compliant.</p>
+                        </div>
+                    </div>
+                    <div class="security-feature">
+                        <div class="security-feature-icon">📊</div>
+                        <div>
+                            <h4>Logs d'audit complets</h4>
+                            <p>Chaque action sensible est tracée et auditable à tout moment.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="security-visual animate-on-scroll">
+                <div class="security-card">
+                    <div class="security-card-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span>security.log</span>
+                    </div>
+                    <div class="security-card-body">
+                        <div class="log-line log-success">✓ login_success :: user@email.com</div>
+                        <div class="log-line log-info">→ subscription_created :: vinted::monthly</div>
+                        <div class="log-line log-success">✓ payment_success :: 29.99 EUR</div>
+                        <div class="log-line log-warning">⚠ login_failed :: 192.168.1.x [blocked]</div>
+                        <div class="log-line log-info">→ password_reset :: token_issued</div>
+                        <div class="log-line log-success">✓ 2fa_verified :: auth_ok</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+// toggle behaviour: update price displays and button text
+const homeToggle = document.getElementById('billing-toggle-home');
+if (homeToggle) {
+    const priceEls = document.querySelectorAll('.service-price');
+    const btns = document.querySelectorAll('.service-btn');
+    const bundlePriceEl = document.querySelector('.bundle-price');
+    const bundleBtn = document.getElementById('pricing-bundle-btn');
+
+    function updatePrices() {
+        const annualMode = homeToggle.checked;
+        priceEls.forEach(el => {
+            const val = annualMode ? el.dataset.annual : el.dataset.monthly;
+            el.querySelector('.price-amount').textContent = val;
+            el.querySelector('.price-period').textContent = annualMode ? '/mois*' : '/mois';
+        });
+        btns.forEach(b => {
+            const monthly = b.dataset.monthly;
+            const annual = b.dataset.annual || monthly;
+            const val = annualMode ? annual : monthly;
+            b.innerHTML = `S'abonner – ${val}€/mois
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
+        });
+        // update bundle box too
+        if (bundlePriceEl) {
+            const bm = bundlePriceEl.dataset.monthly;
+            const ba = bundlePriceEl.dataset.annual || bm;
+            const val = annualMode ? ba : bm;
+            bundlePriceEl.querySelector('.price-amount').textContent = val;
+            bundlePriceEl.querySelector('.price-period').textContent = annualMode ? '/mois*' : '/mois';
+        }
+        if (bundleBtn) {
+            const bm = bundleBtn.dataset.monthly;
+            const ba = bundleBtn.dataset.annual || bm;
+            const val = annualMode ? ba : bm;
+            bundleBtn.textContent = `Obtenir le bundle (${val}€/mois)`;
+        }
+    }
+
+    homeToggle.addEventListener('change', updatePrices);
+    updatePrices();
+}
+</script>
+{% endblock %}
+
+{% endblock %}

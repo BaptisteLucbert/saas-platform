@@ -1,0 +1,14 @@
+scheb_two_factor:
+    security_tokens:
+        - Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken
+        - Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken
+    google:
+        enabled: true
+        issuer: ProfitPulse
+        server_name: ProfitPulse
+    trusted_device:
+        enabled: true
+        lifetime: 2592000 # 30 days
+        cookie_name: trusted_device
+        cookie_secure: auto
+        cookie_same_site: lax

@@ -1,0 +1,60 @@
+{% extends 'base_dashboard.html.twig' %}
+
+{% block title %}Mes Factures – ProfitPulse{% endblock %}
+
+{% block body %}
+<div class="dashboard-header">
+    <div>
+        <h1 class="dashboard-title">Factures & Paiements</h1>
+        <p class="dashboard-subtitle">Historique de vos transactions sécurisées</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if payments is empty %}
+            <div style="text-align:center; padding:3rem; color:var(--color-text-muted);">
+                <p style="font-size:3rem; margin-bottom:1.5rem;">📄</p>
+                <p>Aucune facture disponible pour le moment.</p>
+            </div>
+        {% else %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Montant</th>
+                            <th>Statut</th>
+                            <th>Mode</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in payments %}
+                        <tr>
+                            <td>{{ payment.createdAt|date('d/m/Y H:i') }}</td>
+                            <td>{{ payment.description }}</td>
+                            <td><strong>{{ payment.amount }} {{ payment.currency|default('EUR') }}</strong></td>
+                            <td>
+                                <span class="status status-{{ payment.status }}">
+                                    {{ payment.status|capitalize }}
+                                </span>
+                            </td>
+                            <td>Carte Bancaire</td>
+                            <td>
+                                <div style="display:flex; gap:0.5rem;">
+                                    {% if payment.whopCheckoutId %}
+                                        <button class="btn btn-ghost btn-sm" onclick="alert('Téléchargement PDF Whop...')">PDF</button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

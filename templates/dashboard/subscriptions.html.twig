@@ -1,0 +1,93 @@
+{% extends 'base_dashboard.html.twig' %}
+
+{% block title %}Mes Abonnements – ProfitPulse{% endblock %}
+
+{% block body %}
+<div class="dashboard-header">
+    <div>
+        <h1 class="dashboard-title">Mes Abonnements</h1>
+        <p class="dashboard-subtitle">Gérez vos accès et vos cycles de facturation</p>
+    </div>
+    <a href="{{ path('app_home') }}#services" class="btn btn-primary">
+        Ajouter un service
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if subscriptions is empty %}
+            <div style="text-align:center; padding:3rem; color:var(--color-text-muted);">
+                <p style="font-size:3rem; margin-bottom:1.5rem;">💳</p>
+                <p>Vous n'avez aucun abonnement actif ou passé.</p>
+                <a href="{{ path('app_home') }}#services" class="btn btn-primary" style="margin-top:1.5rem;">
+                    Voir nos services premium
+                </a>
+            </div>
+        {% else %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Cycle</th>
+                            <th>Montant</th>
+                            <th>Statut</th>
+                            <th>Période actuelle</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sub in subscriptions %}
+                        <tr>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:0.75rem;">
+                                    <span style="font-size:1.2rem;">{{ sub.service.icon ?? '⚡' }}</span>
+                                    <div>
+                                        <div style="font-weight:700;">{{ sub.service.name }}</div>
+                                        <div style="font-size:0.75rem; color:var(--color-text-faint);">ID: {{ sub.whopMembershipId|default('N/A') }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ sub.interval == 'monthly' ? 'Mensuel' : 'Annuel' }}</td>
+                            <td>{{ sub.amount }}€</td>
+                            <td>
+                                <span class="status status-{{ sub.status }}">
+                                    {{ sub.status|capitalize }}
+                                </span>
+                            </td>
+                            <td>
+                                <div style="font-size:0.8rem;">
+                                    Du {{ sub.currentPeriodStart|date('d/m/Y') }}<br>
+                                    Au {{ sub.currentPeriodEnd|date('d/m/Y') }}
+                                </div>
+                            </td>
+                            <td>
+                                <div style="display:flex; gap:0.5rem;">
+                                    {% if sub.status == 'active' %}
+                                        <button class="btn btn-ghost btn-sm" onclick="alert('Redirection Whop Dashboard...')">Gérer</button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card" style="background:rgba(59,130,246,0.05); border-color:rgba(59,130,246,0.2);">
+    <div class="card-body" style="display:flex; align-items:center; gap:1.5rem;">
+        <div style="font-size:2.5rem;">🛡️</div>
+        <div>
+            <h3 style="margin-bottom:0.25rem;">Gestion sécurisée par Whop</h3>
+            <p style="font-size:0.875rem; color:var(--color-text-muted);">
+                Pour modifier votre moyen de paiement, changer de formule ou annuler un abonnement, vous pouvez utiliser le dashboard sécurisé de Whop. 
+                Aucune donnée bancaire n'est stockée sur nos serveurs.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ProfitPulse – Plateforme SaaS Premium{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}ProfitPulse – La plateforme SaaS premium pour pronostics sportifs, alertes Amazon & automatisation Vinted.{% endblock %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    {% block stylesheets %}{% endblock %}
+</head>
+<body class="bg-dark text-white">
+
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <a href="{{ path('app_home') }}" class="navbar-brand">
+                <span class="brand-icon">⚡</span>
+                <span class="brand-name">ProfitPulse</span>
+            </a>
+            <div class="navbar-menu">
+                <a href="{{ path('app_home') }}#services" class="nav-link">Services</a>
+                <a href="{{ path('app_home') }}#security" class="nav-link">Sécurité</a>
+            </div>
+            <div class="navbar-actions">
+                {% if app.user %}
+                    <a href="{{ path('app_dashboard') }}" class="btn btn-primary">Dashboard</a>
+                {% else %}
+                    <a href="{{ path('app_login') }}" class="btn btn-ghost">Connexion</a>
+                    <a href="{{ path('app_home') }}#services" class="btn btn-primary">S'abonner</a>
+                {% endif %}
+            </div>
+            <button class="navbar-toggle" id="navbarToggle" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash flash-{{ type }}">
+                <span>{{ message }}</span>
+                <button onclick="this.parentElement.remove()">×</button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    {% block body %}{% endblock %}
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="{{ path('app_home') }}" class="navbar-brand">
+                        <span class="brand-icon">⚡</span>
+                        <span class="brand-name">ProfitPulse</span>
+                    </a>
+                    <p>La plateforme SaaS premium pour maximiser vos revenus en ligne.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="{{ path('app_home') }}#services">Pronostics Sportifs</a></li>
+                        <li><a href="{{ path('app_home') }}#services">Amazon Deals</a></li>
+                        <li><a href="{{ path('app_home') }}#services">Vinted Automation</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Légal</h4>
+                    <ul>
+                        <li><a href="{{ path('app_terms') }}">Conditions d'utilisation</a></li>
+                        <li><a href="{{ path('app_privacy') }}">Politique de confidentialité</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Compte</h4>
+                    <ul>
+                        <li><a href="{{ path('app_login') }}">Connexion</a></li>
+                        <li><a href="{{ path('app_password_forgot') }}">Mot de passe oublié</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; {{ "now"|date("Y") }} ProfitPulse. Tous droits réservés.</p>
+                <div class="footer-badges">
+                    <span class="badge-secure">🔒 SSL</span>
+                    <span class="badge-secure">🛡️ RGPD</span>
+                    <span class="badge-secure">💳 Whop</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ asset('js/app.js') }}"></script>
+    {% block javascripts %}{% endblock %}
+</body>
+</html>

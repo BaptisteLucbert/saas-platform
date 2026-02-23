@@ -1,0 +1,49 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Logs d'Audit – Admin{% endblock %}
+
+{% block body %}
+<div class="dashboard-header">
+    <div>
+        <h1 class="dashboard-title">Logs d'Audit Système</h1>
+        <p class="dashboard-subtitle">Traçabilité complète des actions sensibles</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Action</th>
+                        <th>Utilisateur</th>
+                        <th>Niveau</th>
+                        <th>Détails</th>
+                        <th>IP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td style="white-space:nowrap;">{{ log.createdAt|date('d/m/Y H:i:s') }}</td>
+                        <td><strong>{{ log.action }}</strong></td>
+                        <td>{{ log.user ? log.user.email : 'Système' }}</td>
+                        <td>
+                            <span class="badge badge-{{ log.severity == 'error' or log.severity == 'warning' ? 'danger' : 'primary' }}">
+                                {{ log.severity|upper }}
+                            </span>
+                        </td>
+                        <td style="font-size:0.75rem; color:var(--color-text-muted);">
+                            <pre style="margin:0; font-family:inherit;">{{ log.context|json_encode }}</pre>
+                        </td>
+                        <td>{{ log.ipAddress }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

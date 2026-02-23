@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bienvenue sur ProfitPulse</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #07080f; color: #e2e8f0; line-height: 1.6; }
+  .wrapper { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+  .card { background: #0d0f1a; border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; overflow: hidden; }
+  .header { background: linear-gradient(135deg, #7c3aed, #06b6d4); padding: 40px 40px 30px; text-align: center; }
+  .logo { font-size: 2.5rem; margin-bottom: 10px; }
+  .header h1 { font-size: 1.75rem; font-weight: 800; color: white; margin-bottom: 8px; }
+  .header p { color: rgba(255,255,255,0.85); font-size: 0.95rem; }
+  .body { padding: 40px; }
+  .greeting { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; color: #e2e8f0; }
+  .text { color: #94a3b8; font-size: 0.9rem; line-height: 1.8; margin-bottom: 16px; }
+  .credentials-box { background: rgba(124,58,237,0.08); border: 1px solid rgba(124,58,237,0.25); border-radius: 12px; padding: 24px; margin: 24px 0; }
+  .credentials-box h3 { font-size: 0.85rem; font-weight: 700; color: #a855f7; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 16px; }
+  .credential-row { display: flex; justify-content: space-between; margin-bottom: 12px; }
+  .credential-label { font-size: 0.8rem; color: #64748b; font-weight: 600; }
+  .credential-value { font-size: 0.85rem; color: #e2e8f0; font-family: 'Courier New', monospace; font-weight: 700; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 6px; }
+  .warning-box { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); border-radius: 12px; padding: 16px; margin: 20px 0; }
+  .warning-box p { color: #fcd34d; font-size: 0.85rem; }
+  .cta-btn { display: block; text-align: center; background: linear-gradient(135deg, #7c3aed, #06b6d4); color: white !important; text-decoration: none; padding: 16px 32px; border-radius: 50px; font-weight: 700; font-size: 1rem; margin: 28px 0; }
+  .features { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 24px 0; }
+  .feature { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 16px; font-size: 0.85rem; color: #94a3b8; }
+  .feature strong { display: block; color: #e2e8f0; margin-bottom: 4px; }
+  .footer { background: rgba(0,0,0,0.3); padding: 24px 40px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); }
+  .footer p { color: #475569; font-size: 0.75rem; line-height: 1.6; }
+  .footer a { color: #7c3aed; text-decoration: none; }
+  @media (max-width: 480px) {
+    .body { padding: 24px; }
+    .features { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="card">
+    <div class="header">
+      <div class="logo">⚡</div>
+      <h1>Bienvenue sur ProfitPulse !</h1>
+      <p>Votre compte a été créé avec succès.</p>
+    </div>
+    <div class="body">
+      <p class="greeting">Bonjour {{ user.firstName ?? 'cher membre' }} 👋</p>
+      <p class="text">
+        Votre paiement a été validé et votre compte ProfitPulse est maintenant actif.
+        Vous avez accès à vos services dès maintenant.
+      </p>
+
+      <div class="credentials-box">
+        <h3>🔑 Vos identifiants de connexion</h3>
+        <div class="credential-row">
+          <span class="credential-label">Email</span>
+          <span class="credential-value">{{ user.email }}</span>
+        </div>
+        <div class="credential-row">
+          <span class="credential-label">Mot de passe temporaire</span>
+          <span class="credential-value">{{ tempPassword }}</span>
+        </div>
+      </div>
+
+      <div class="warning-box">
+        <p>⚠️ <strong>Sécurité :</strong> Ce mot de passe est temporaire. Vous devrez le modifier lors de votre première connexion.</p>
+      </div>
+
+      <a href="{{ loginUrl }}" class="cta-btn">
+        🚀 Accéder à mon espace
+      </a>
+
+      <div class="features">
+        <div class="feature"><strong>🤖 Discord</strong>Rejoignez notre serveur pour recevoir vos alertes en temps réel.</div>
+        <div class="feature"><strong>🛡️ Sécurité</strong>Activez la 2FA dans vos paramètres de sécurité.</div>
+        <div class="feature"><strong>💳 Facturation</strong>Gérez votre abonnement depuis votre dashboard.</div>
+        <div class="feature"><strong>📊 Statistiques</strong>Suivez vos performances en temps réel.</div>
+      </div>
+
+      <p class="text">
+        Si vous avez des questions, n'hésitez pas à nous contacter via notre serveur Discord.
+        Notre équipe est disponible 7j/7.
+      </p>
+    </div>
+    <div class="footer">
+      <p>
+        Vous recevez cet email car vous venez de souscrire à ProfitPulse.<br>
+        <a href="#">Se désabonner</a> · <a href="#">Politique de confidentialité</a><br><br>
+        © 2025 ProfitPulse. Tous droits réservés.
+      </p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

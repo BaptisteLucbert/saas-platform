@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ProfitPulse – Dashboard{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    {% block stylesheets %}{% endblock %}
+</head>
+<body class="bg-dark text-white">
+
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash flash-{{ type }}">
+                <span>{{ message }}</span>
+                <button onclick="this.parentElement.remove()">×</button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="dashboard-layout">
+        {{ include('dashboard/_sidebar.html.twig') }}
+
+        <main class="dashboard-main">
+            {% block body %}{% endblock %}
+        </main>
+    </div>
+
+    <script src="{{ asset('js/app.js') }}"></script>
+    {% block javascripts %}{% endblock %}
+</body>
+</html>

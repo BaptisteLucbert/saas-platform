@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+{% block title %}Succès – ProfitPulse{% endblock %}
+{% block body %}
+<div class="success-page">
+    <div class="hero-glow hero-glow-1" style="opacity:0.3"></div>
+    <div class="success-card">
+        <div class="success-icon">🎉</div>
+        <h1>Paiement réussi !</h1>
+        <p>Votre abonnement est actif. Vérifiez votre email pour recevoir vos accès.<br>
+        Un email avec vos identifiants a été envoyé automatiquement.</p>
+        <div style="display:flex; flex-direction:column; gap:1rem; align-items:center;">
+            <a href="{{ path('app_login') }}" class="btn btn-primary btn-xl" id="checkout-success-login-btn">
+                Se connecter à mon espace
+            </a>
+            <a href="{{ path('app_home') }}" class="btn btn-ghost">
+                Retour à l'accueil
+            </a>
+        </div>
+        <div style="margin-top:2rem; padding:1rem; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2); border-radius:12px;">
+            <p style="font-size:0.875rem; color:var(--color-text-muted);">
+                ✅ Confirmation envoyée par email<br>
+                🤖 Rejoignez notre Discord pour activer votre accès<br>
+                💳 Votre abonnement est gérable depuis votre dashboard
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

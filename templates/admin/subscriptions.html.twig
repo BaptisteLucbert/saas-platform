@@ -1,0 +1,49 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Gestion Abonnements – Admin{% endblock %}
+
+{% block body %}
+<div class="dashboard-header">
+    <div>
+        <h1 class="dashboard-title">Abonnements</h1>
+        <p class="dashboard-subtitle">Liste de tous les abonnements utilisateurs</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Utilisateur</th>
+                        <th>Service</th>
+                        <th>Montant</th>
+                        <th>Statut</th>
+                        <th>Période</th>
+                        <th>Whop ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sub in subscriptions %}
+                    <tr>
+                        <td>{{ sub.user.email }}</td>
+                        <td>{{ sub.service.name }}</td>
+                        <td>{{ sub.amount }}€</td>
+                        <td>
+                            <span class="status status-{{ sub.status }}">
+                                {{ sub.status|capitalize }}
+                            </span>
+                        </td>
+                        <td>
+                            {{ sub.currentPeriodStart|date('d/m/Y') }} - {{ sub.currentPeriodEnd|date('d/m/Y') }}
+                        </td>
+                        <td><span style="font-size:0.75rem;">{{ sub.whopMembershipId }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

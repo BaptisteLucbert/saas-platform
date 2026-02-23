@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: 'Inter', sans-serif; background: #07080f; color: #e2e8f0; }
+  .card { background: #0d0f1a; border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; overflow: hidden; max-width: 600px; margin: 40px auto; }
+  .header { background: #ef4444; padding: 40px; text-align: center; color: white; }
+  .body { padding: 40px; }
+  .cta-btn { display: block; text-align: center; background: #ef4444; color: white !important; text-decoration: none; padding: 16px; border-radius: 50px; font-weight: 700; margin: 28px 0; }
+  .footer { padding: 24px; text-align: center; font-size: 0.75rem; color: #475569; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <div style="font-size: 2.5rem;">⚠️</div>
+      <h1>Échec de paiement</h1>
+    </div>
+    <div class="body">
+      <p>Bonjour {{ user.firstName ?? 'cher membre' }},</p>
+      <p>Nous n'avons pas pu prélever le montant de votre abonnement {{ serviceName }}.</p>
+      <p>Votre accès sera suspendu automatiquement d'ici 24h si aucune action n'est entreprise.</p>
+      
+      <a href="{{ billingUrl }}" class="cta-btn">Mettre à jour mon mode de paiement</a>
+      
+      <p>Motif de l'échec : <strong>{{ failureReason|default('Provision insuffisante ou carte refusée') }}</strong></p>
+    </div>
+    <div class="footer">
+      © 2025 ProfitPulse. Facturation sécurisée par Whop.
+    </div>
+  </div>
+</body>
+</html>
